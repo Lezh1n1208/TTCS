@@ -53,7 +53,7 @@
    - Kiểm tra và chuyển đổi đăng ký hết hạn (`sp_check_expired_monthly_registrations`)
 
 3. **Xử lý báo cáo mất đồ**
-   - Tạo báo cáo mất đồ (`sp_create_missing_report`)
+   - Tạo báo cáo mất thẻ xe (`sp_create_missing_report`)
 
 ## Quyền hạn người dùng
 
