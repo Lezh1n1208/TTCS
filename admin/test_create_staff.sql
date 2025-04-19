@@ -1,0 +1,128 @@
+use [parking_management]
+-- Step 1: Create sample data (if needed)
+-- Ensure account and staff tables exist
+IF OBJECT_ID('dbo.account', 'U') IS NULL
+CREATE TABLE dbo.account (
+    account_id VARCHAR(36) NOT NULL PRIMARY KEY,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(10) NOT NULL CHECK (role IN ('STAFF', 'ADMIN')),
+    username VARCHAR(50) NOT NULL UNIQUE
+);
+GO
+
+IF OBJECT_ID('dbo.staff', 'U') IS NULL
+CREATE TABLE dbo.staff (
+    account_id VARCHAR(36) NOT NULL PRIMARY KEY,
+    address VARCHAR(200),
+    dob DATE,
+    email VARCHAR(100),
+    gender VARCHAR(10),
+    identification VARCHAR(20),
+    is_active BIT,
+    name VARCHAR(100),
+    phone_number VARCHAR(15),
+    FOREIGN KEY (account_id) REFERENCES account(account_id)
+);
+GO
+
+-- Step 2: Test cases
+-- Test Case 1: Valid (Create new staff account)
+PRINT 'Test Case 1: Valid - Create new staff account';
+BEGIN TRY
+    EXEC dbo.sp_create_staff_account
+        @account_id = 'acc2',
+        @username = 'staff2',
+        @password = 'Staff@Pass2023!',
+        @role = 'STAFF',
+        @address = '456 Street',
+        @dob = '1992-02-02',
+        @email = 'staff2@example.com',
+        @gender = 'FEMALE',
+        @identification = '987654321',
+        @is_active = 1,
+        @name = 'Staff Two',
+        @phone_number = '0987654321';
+    PRINT 'Test Case 1: SUCCESS';
+    SELECT 'account' AS table_name, * FROM dbo.account WHERE account_id = 'acc2';
+    SELECT 'staff' AS table_name, * FROM dbo.staff WHERE account_id = 'acc2';
+END TRY
+BEGIN CATCH
+    PRINT 'Test Case 1: FAILED - Error: ' + ERROR_MESSAGE();
+END CATCH;
+GO
+
+-- Test Case 2: Invalid - Duplicate username
+PRINT 'Test Case 2: Invalid - Duplicate username';
+BEGIN TRY
+    EXEC dbo.sp_create_staff_account
+        @account_id = 'acc3',
+        @username = 'staff1', -- Duplicate with acc1
+        @password = 'Staff@Pass2023!',
+        @role = 'STAFF',
+        @address = '789 Street',
+        @dob = '1995-03-03',
+        @email = 'staff3@example.com',
+        @gender = 'MALE',
+        @identification = '456789123',
+        @is_active = 1,
+        @name = 'Staff Three',
+        @phone_number = '1122334455';
+    PRINT 'Test Case 2: FAILED - Should have thrown error';
+END TRY
+BEGIN CATCH
+    PRINT 'Test Case 2: SUCCESS - Expected error: ' + ERROR_MESSAGE();
+END CATCH;
+GO
+
+-- Test Case 3: Invalid - Duplicate identification (assuming trigger exists)
+PRINT 'Test Case 3: Invalid - Duplicate identification';
+BEGIN TRY
+    EXEC dbo.sp_create_staff_account
+        @account_id = 'acc4',
+        @username = 'staff4',
+        @password = 'Staff@Pass2023!',
+        @role = 'STAFF',
+        @address = '101 Street',
+        @dob = '1996-04-04',
+        @email = 'staff4@example.com',
+        @gender = 'FEMALE',
+        @identification = '123456789', -- Duplicate with acc1
+        @is_active = 1,
+        @name = 'Staff Four',
+        @phone_number = '2233445566';
+    PRINT 'Test Case 3: FAILED - Should have thrown error';
+END TRY
+BEGIN CATCH
+    PRINT 'Test Case 3: SUCCESS - Expected error: ' + ERROR_MESSAGE();
+END CATCH;
+GO
+
+-- Test Case 4: Invalid - Invalid role
+PRINT 'Test Case 4: Invalid - Invalid role';
+BEGIN TRY
+    EXEC dbo.sp_create_staff_account
+        @account_id = 'acc5',
+        @username = 'staff5',
+        @password = 'Staff@Pass2023!',
+        @role = 'INVALID', -- Not STAFF or ADMIN
+        @address = '202 Street',
+        @dob = '1997-05-05',
+        @email = 'staff5@example.com',
+        @gender = 'MALE',
+        @identification = '789123456',
+        @is_active = 1,
+        @name = 'Staff Five',
+        @phone_number = '3344556677';
+    PRINT 'Test Case 4: FAILED - Should have thrown error';
+END TRY
+BEGIN CATCH
+    PRINT 'Test Case 4: SUCCESS - Expected error: ' + ERROR_MESSAGE();
+END CATCH;
+GO
+
+-- Step 3: Verify sp_toggle_staff_status with new account
+PRINT 'Testing sp_toggle_staff_status with new account...';
+SELECT 'Before acc2', account_id, is_active FROM dbo.staff WHERE account_id = 'acc2';
+EXEC dbo.sp_toggle_staff_status @account_id = 'acc2';
+SELECT 'After acc2', account_id, is_active FROM dbo.staff WHERE account_id = 'acc2';
+GO
