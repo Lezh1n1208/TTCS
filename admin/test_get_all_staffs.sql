@@ -24,6 +24,7 @@ CREATE TABLE dbo.staff (
 );
 GO
 
+DELETE FROM dbo.active_monthly_registration;
 DELETE FROM dbo.staff;
 DELETE FROM dbo.account;
 GO
@@ -38,7 +39,7 @@ INSERT INTO dbo.staff (account_id, address, dob, email, gender, identification, 
 VALUES 
     ('acc1', '123 Street', '1990-01-01', 'staff1@example.com', 'MALE', '123456789', 1, 'Staff One', '1234567890'),
     ('acc2', '456 Street', '1992-02-02', 'staff2@example.com', 'FEMALE', '987654321', 0, 'Staff Two', '0987654321'),
-    ('acc3', '789 Street', '1985-03-03', 'admin1@example.com', 'MALE', '111222333', 1, 'Admin One', '1112223333');
+    ('acc3', '789 Street', '1985-03-03', 'admin@example.com', 'MALE', '111222333', 1, 'Admin', '1112223333');
 GO
 
 -- Step 2: Test cases

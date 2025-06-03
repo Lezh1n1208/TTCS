@@ -104,6 +104,8 @@ DELETE FROM dbo.student_information;
 DELETE FROM dbo.lecturer_information;
 DELETE FROM dbo.customer;
 DELETE FROM dbo.payment;
+DELETE FROM dbo.parking_record;
+DELETE FROM dbo.parking_record_history;
 DELETE FROM dbo.staff;
 DELETE FROM dbo.account;
 DELETE FROM dbo.price;
@@ -141,14 +143,14 @@ VALUES
 IF NOT EXISTS (SELECT 1 FROM dbo.payment WHERE payment_id = 'pay1')
 INSERT INTO dbo.payment (payment_id, amount, create_at, payment_type)
 VALUES 
-    ('pay1', 100000, '2025-04-01 10:00:00', 'MONTHLY'),
-    ('pay2', 100000, '2025-04-15 10:00:00', 'MONTHLY');
+    ('pay1', 100000, '2025-05-01 10:00:00', 'MONTHLY'),
+    ('pay2', 100000, '2025-05-15 10:00:00', 'MONTHLY');
 
 IF NOT EXISTS (SELECT 1 FROM dbo.active_monthly_registration WHERE id = 'amr1')
 INSERT INTO dbo.active_monthly_registration (id, expiration_date, issue_date, create_by, customer_id, payment_id, vehicle_id)
 VALUES 
-    ('amr1', '2025-04-10 23:59:59', '2025-04-01 10:00:00', 'acc1', 'cust1', 'pay1', 'veh1'), -- Expired
-    ('amr2', '2025-05-15 23:59:59', '2025-04-15 10:00:00', 'acc1', 'cust2', 'pay2', 'veh2'); -- Active
+    ('amr1', '2025-06-01 23:59:59', '2025-05-01 10:00:00', 'acc1', 'cust1', 'pay1', 'veh1'), -- Expired
+    ('amr2', '2025-06-15 23:59:59', '2025-05-15 10:00:00', 'acc1', 'cust2', 'pay2', 'veh2'); -- Active
 GO
 
 -- Step 2: Test cases for sp_check_expired_monthly_registrations

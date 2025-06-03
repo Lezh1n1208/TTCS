@@ -113,10 +113,12 @@ GO
 DELETE FROM dbo.missing_report;
 DELETE FROM dbo.parking_record_history;
 DELETE FROM dbo.parking_record;
+DELETE FROM dbo.expire_monthly_registration;
 DELETE FROM dbo.payment;
 DELETE FROM dbo.parking_card;
 DELETE FROM dbo.staff;
 DELETE FROM dbo.account;
+DELETE FROM dbo.vehicle;
 DELETE FROM dbo.vehicle_type;
 GO
 

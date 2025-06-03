@@ -117,6 +117,7 @@ DELETE FROM dbo.vehicle;
 DELETE FROM dbo.lecturer_information;
 DELETE FROM dbo.student_information;
 DELETE FROM dbo.customer;
+DELETE FROM dbo.missing_report;
 DELETE FROM dbo.parking_record_history;
 DELETE FROM dbo.payment;
 DELETE FROM dbo.price;

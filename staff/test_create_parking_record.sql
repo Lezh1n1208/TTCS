@@ -115,6 +115,7 @@ DELETE FROM dbo.payment;
 DELETE FROM dbo.parking_card;
 DELETE FROM dbo.staff;
 DELETE FROM dbo.account;
+DELETE FROM dbo.price;
 DELETE FROM dbo.vehicle_type;
 GO
 

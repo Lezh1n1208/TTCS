@@ -103,6 +103,7 @@ DELETE FROM dbo.vehicle;
 DELETE FROM dbo.student_information;
 DELETE FROM dbo.lecturer_information;
 DELETE FROM dbo.customer;
+DELETE FROM dbo.parking_record;
 DELETE FROM dbo.payment;
 DELETE FROM dbo.staff;
 DELETE FROM dbo.account;

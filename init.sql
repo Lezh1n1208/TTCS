@@ -71,21 +71,21 @@ GO
 
 -- Step 4: Create logins and users with error handling
 BEGIN TRY
-    IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = 'lethic')
-        CREATE LOGIN [lethic] WITH PASSWORD = 'Password@123', DEFAULT_DATABASE = [parking_management];
+    IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = 'login_admin')
+        CREATE LOGIN [login_admin] WITH PASSWORD = 'Admin@123', DEFAULT_DATABASE = [parking_management];
 END TRY
 BEGIN CATCH
-    PRINT 'Error creating login lethic: ' + ERROR_MESSAGE();
+    PRINT 'Error creating login admin: ' + ERROR_MESSAGE();
     THROW;
 END CATCH;
 GO
 
 BEGIN TRY
-    IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = 'admin')
-        CREATE LOGIN [admin] WITH PASSWORD = 'Password@456', DEFAULT_DATABASE = [parking_management];
+    IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = 'login_staff')
+        CREATE LOGIN [login_staff] WITH PASSWORD = 'Staff@456', DEFAULT_DATABASE = [parking_management];
 END TRY
 BEGIN CATCH
-    PRINT 'Error creating login admin: ' + ERROR_MESSAGE();
+    PRINT 'Error creating login staff: ' + ERROR_MESSAGE();
     THROW;
 END CATCH;
 GO
@@ -94,41 +94,42 @@ USE [parking_management];
 GO
 
 BEGIN TRY
-    IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'lethic')
-        CREATE USER [lethic] FOR LOGIN [lethic] WITH DEFAULT_SCHEMA = [dbo];
+    IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'APP_ADMIN')
+        CREATE USER [APP_ADMIN] FOR LOGIN [login_admin] WITH DEFAULT_SCHEMA = [dbo];
 END TRY
 BEGIN CATCH
-    PRINT 'Error creating user lethic: ' + ERROR_MESSAGE();
+    PRINT 'Error creating staff user: ' + ERROR_MESSAGE();
     THROW;
 END CATCH;
 GO
 
 BEGIN TRY
-    IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'admin')
-        CREATE USER [admin] FOR LOGIN [admin] WITH DEFAULT_SCHEMA = [dbo];
+    IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'APP_STAFF')
+        CREATE USER [APP_STAFF] FOR LOGIN [login_staff] WITH DEFAULT_SCHEMA = [dbo];
 END TRY
 BEGIN CATCH
-    PRINT 'Error creating user admin: ' + ERROR_MESSAGE();
+    PRINT 'Error creating admin user: ' + ERROR_MESSAGE();
     THROW;
 END CATCH;
 GO
 
 -- Step 5: Create roles and assign permissions
-IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'STAFF' AND type = 'R')
-    CREATE ROLE [STAFF];
-IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'ADMIN' AND type = 'R')
-    CREATE ROLE [ADMIN];
+IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'ROLE_ADMIN' AND type = 'R')
+    CREATE ROLE [ROLE_ADMIN];
+IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'ROLE_STAFF' AND type = 'R')
+    CREATE ROLE [ROLE_STAFF];
+GO
+
+-- Grant database permissions to roles (not roles to avoid Msg 15413)
+ALTER ROLE [db_datareader] ADD MEMBER [ROLE_ADMIN];
+ALTER ROLE [db_datawriter] ADD MEMBER [ROLE_ADMIN];
+ALTER ROLE [db_datareader] ADD MEMBER [ROLE_STAFF];
+ALTER ROLE [db_datawriter] ADD MEMBER [ROLE_STAFF];
 GO
 
 -- Assign users to roles
-ALTER ROLE [STAFF] ADD MEMBER [lethic];
-ALTER ROLE [ADMIN] ADD MEMBER [admin];
-GO
-
--- Grant database permissions to users (not roles to avoid Msg 15413)
-ALTER ROLE [db_datareader] ADD MEMBER [lethic];
-ALTER ROLE [db_datawriter] ADD MEMBER [lethic];
-ALTER ROLE [db_owner] ADD MEMBER [admin];
+ALTER ROLE [ROLE_ADMIN] ADD MEMBER [APP_ADMIN];
+ALTER ROLE [ROLE_STAFF] ADD MEMBER [APP_STAFF];
 GO
 
 -- Step 6: Create tables
@@ -1197,28 +1198,30 @@ END;
 GO
 
 -- Step 10: Grant permissions to roles
-GRANT EXECUTE ON dbo.sp_create_parking_record TO STAFF;
-GRANT EXECUTE ON dbo.sp_process_vehicle_exit TO STAFF;
-GRANT EXECUTE ON dbo.sp_create_active_monthly_registration TO STAFF;
-GRANT EXECUTE ON dbo.sp_create_missing_report TO STAFF;
-GRANT EXECUTE ON dbo.sp_get_active_monthly_registration TO STAFF;
+GRANT EXECUTE ON dbo.sp_create_parking_record TO ROLE_STAFF;
+GRANT EXECUTE ON dbo.sp_process_vehicle_exit TO ROLE_STAFF;
+GRANT EXECUTE ON dbo.sp_create_active_monthly_registration TO ROLE_STAFF;
+GRANT EXECUTE ON dbo.sp_create_missing_report TO ROLE_STAFF;
+GRANT EXECUTE ON dbo.sp_get_active_monthly_registration TO ROLE_STAFF;
+GRANT EXECUTE ON dbo.sp_check_expired_monthly_registrations TO ROLE_STAFF;
 
-GRANT EXECUTE ON dbo.sp_create_staff_account TO ADMIN;
-GRANT EXECUTE ON dbo.sp_update_staff TO ADMIN;
-GRANT EXECUTE ON dbo.sp_toggle_staff_status TO ADMIN;
-GRANT EXECUTE ON dbo.sp_get_all_staff TO ADMIN;
-GRANT EXECUTE ON dbo.sp_get_staff TO ADMIN;
-GRANT EXECUTE ON dbo.sp_get_price_by_vehicle_type TO ADMIN;
-GRANT EXECUTE ON dbo.sp_update_price_by_vehicle_type TO ADMIN;
-GRANT EXECUTE ON dbo.sp_get_parking_record_history TO ADMIN;
-GRANT EXECUTE ON dbo.sp_get_monthly_registration_history TO ADMIN;
-GRANT EXECUTE ON dbo.sp_get_missing_report_history TO ADMIN;
-GRANT EXECUTE ON dbo.sp_get_payment_history TO ADMIN;
-GRANT EXECUTE ON dbo.sp_get_revenue_stats TO ADMIN;
-GRANT EXECUTE ON dbo.sp_get_parking_stats TO ADMIN;
+GRANT EXECUTE ON dbo.sp_create_staff_account TO ROLE_ADMIN;
+GRANT EXECUTE ON dbo.sp_update_staff TO ROLE_ADMIN;
+GRANT EXECUTE ON dbo.sp_toggle_staff_status TO ROLE_ADMIN;
+GRANT EXECUTE ON dbo.sp_get_all_staff TO ROLE_ADMIN;
+GRANT EXECUTE ON dbo.sp_get_staff TO ROLE_ADMIN;
+GRANT EXECUTE ON dbo.sp_get_price_by_vehicle_type TO ROLE_ADMIN;
+GRANT EXECUTE ON dbo.sp_update_price_by_vehicle_type TO ROLE_ADMIN;
+GRANT EXECUTE ON dbo.sp_get_parking_record_history TO ROLE_ADMIN;
+GRANT EXECUTE ON dbo.sp_get_monthly_registration_history TO ROLE_ADMIN;
+GRANT EXECUTE ON dbo.sp_get_missing_report_history TO ROLE_ADMIN;
+GRANT EXECUTE ON dbo.sp_get_payment_history TO ROLE_ADMIN;
+GRANT EXECUTE ON dbo.sp_get_revenue_stats TO ROLE_ADMIN;
+GRANT EXECUTE ON dbo.sp_get_parking_stats TO ROLE_ADMIN;
 GO
 
 -- Step 11: Create schedule job for expired monthly registrations
+IF NOT EXISTS (SELECT 1 FROM msdb.dbo.sysjobs WHERE name = N'CheckExpiredMonthlyRegistrations')
 BEGIN TRY
     EXEC msdb.dbo.sp_add_job
         @job_name = N'CheckExpiredMonthlyRegistrations';
