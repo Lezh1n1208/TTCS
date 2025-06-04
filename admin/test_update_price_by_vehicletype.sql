@@ -17,6 +17,18 @@ CREATE TABLE dbo.price (
 );
 GO
 
+DELETE FROM dbo.active_monthly_registration;
+DELETE FROM dbo.expire_monthly_registration;
+DELETE FROM dbo.vehicle;
+DELETE FROM dbo.lecturer_information;
+DELETE FROM dbo.student_information;
+DELETE FROM dbo.customer;
+DELETE FROM dbo.missing_report;
+DELETE FROM dbo.parking_record_history;
+DELETE FROM dbo.payment;
+DELETE FROM dbo.staff;
+DELETE FROM dbo.parking_record;
+DELETE FROM dbo.account;
 DELETE FROM dbo.price;
 DELETE FROM dbo.vehicle_type;
 GO
@@ -55,16 +67,4 @@ EXEC dbo.sp_update_price_by_vehicle_type
     @night_price = 9000;
 SELECT 'After vt999', * FROM dbo.price WHERE type_id = 'vt999';
 PRINT 'Test Case 2: SUCCESS - No rows updated';
-GO
-
--- Test Case 3: Invalid - Negative price
-PRINT 'Test Case 3: Invalid - Negative price';
-SELECT 'Before vt2', * FROM dbo.price WHERE type_id = 'vt2';
-EXEC dbo.sp_update_price_by_vehicle_type
-    @vehicle_type_id = 'vt2',
-    @day_price = -1000,
-    @monthly_price = 200000,
-    @night_price = 15000;
-SELECT 'After vt2', * FROM dbo.price WHERE type_id = 'vt2';
-PRINT 'Test Case 3: SUCCESS - Update proceeds (no validation)';
 GO

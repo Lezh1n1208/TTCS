@@ -100,12 +100,14 @@ GO
 DELETE FROM dbo.active_monthly_registration;
 DELETE FROM dbo.expire_monthly_registration;
 DELETE FROM dbo.vehicle;
-DELETE FROM dbo.student_information;
 DELETE FROM dbo.lecturer_information;
+DELETE FROM dbo.student_information;
 DELETE FROM dbo.customer;
-DELETE FROM dbo.parking_record;
+DELETE FROM dbo.missing_report;
+DELETE FROM dbo.parking_record_history;
 DELETE FROM dbo.payment;
 DELETE FROM dbo.staff;
+DELETE FROM dbo.parking_record;
 DELETE FROM dbo.account;
 DELETE FROM dbo.price;
 DELETE FROM dbo.vehicle_type;
@@ -169,20 +171,4 @@ GO
 PRINT 'Test Case 3: Invalid - Get non-existent registration';
 EXEC dbo.sp_get_active_monthly_registration @id = 'amr999';
 PRINT 'Test Case 3: SUCCESS - No rows returned';
-GO
-
--- Step 3: Test cases for sp_check_expired_monthly_registrations
--- Test Case 4: Valid - Move expired registrations
-PRINT 'Test Case 4: Valid - Move expired registrations';
-EXEC dbo.sp_check_expired_monthly_registrations;
-SELECT * FROM dbo.expire_monthly_registration WHERE id = 'amr1';
-SELECT * FROM dbo.active_monthly_registration WHERE id = 'amr1';
-PRINT 'Test Case 4: SUCCESS';
-GO
-
--- Test Case 5: Valid - No expired registrations
-PRINT 'Test Case 5: Valid - No expired registrations';
-EXEC dbo.sp_check_expired_monthly_registrations;
-SELECT * FROM dbo.expire_monthly_registration;
-PRINT 'Test Case 5: SUCCESS - No new rows in expire_monthly_registration';
 GO

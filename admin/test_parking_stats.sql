@@ -68,8 +68,20 @@ CREATE TABLE dbo.parking_record_history (
 GO
 
 -- Xóa dữ liệu cũ để tránh xung đột
-DELETE FROM dbo.parking_card;
+DELETE FROM dbo.active_monthly_registration;
+DELETE FROM dbo.expire_monthly_registration;
+DELETE FROM dbo.vehicle;
+DELETE FROM dbo.lecturer_information;
+DELETE FROM dbo.student_information;
+DELETE FROM dbo.customer;
+DELETE FROM dbo.missing_report;
 DELETE FROM dbo.parking_record_history;
+DELETE FROM dbo.payment;
+DELETE FROM dbo.staff;
+DELETE FROM dbo.parking_record;
+DELETE FROM dbo.account;
+DELETE FROM dbo.price;
+DELETE FROM dbo.vehicle_type;
 GO
 
 -- Chèn dữ liệu mẫu
@@ -95,14 +107,20 @@ IF NOT EXISTS (SELECT 1 FROM dbo.parking_card WHERE card_id = 1)
 INSERT INTO dbo.parking_card (card_id)
 VALUES (1), (2), (3), (4);
 
+IF NOT EXISTS (SELECT 1 FROM dbo.payment WHERE payment_id = 'pay1')
+INSERT INTO dbo.payment (payment_id, amount, create_at, payment_type)
+VALUES 
+    ('pay1', 5000, '2025-04-15 10:00:00', 'PARKING'),
+    ('pay2', 100000, '2025-04-16 12:00:00', 'MONTHLY'),
+    ('pay3', 50000, '2025-04-17 14:00:00', 'MISSING');
+
 
 IF NOT EXISTS (SELECT 1 FROM dbo.parking_record_history WHERE history_id = 'hist1')
 INSERT INTO dbo.parking_record_history (history_id, entry_time, exit_time, identifier, license_plate, type, card_id, payment_id, staff_in, staff_out, vehicle_type)
 VALUES 
     ('hist1', '2025-04-15 08:00:00', '2025-04-15 12:00:00', 'ID123', '29A-12345', 'DAILY', 1, 'pay1', 'acc1', 'acc2', 'vt1'),
     ('hist2', '2025-04-15 09:00:00', '2025-04-15 13:00:00', 'ID456', '29B-67890', 'MONTHLY', 2, 'pay2', 'acc2', 'acc1', 'vt1'),
-    ('hist3', '2025-04-16 10:00:00', '2025-04-16 14:00:00', 'ID789', '30A-54321', 'DAILY', 3, 'pay3', 'acc1', 'acc2', 'vt2'),
-    ('hist4', '2025-04-17 11:00:00', '2025-04-17 15:00:00', 'ID101', '30B-98765', 'MONTHLY', 4, 'pay4', 'acc2', 'acc1', 'vt2');
+    ('hist3', '2025-04-16 10:00:00', '2025-04-16 14:00:00', 'ID789', '30A-54321', 'DAILY', 3, 'pay3', 'acc1', 'acc2', 'vt2');
 GO
 
 -- **Bước 2: Các trường hợp kiểm tra**
@@ -114,13 +132,13 @@ GO
 
 -- Trường hợp 2: Hợp lệ - Lấy thống kê cho một ngày
 PRINT 'Case 2: Valid - Get statistic for a date';
-EXEC dbo.sp_get_parking_stats @start_date = '2025-04-15', @end_date = '2025-04-15';
+EXEC dbo.sp_get_parking_stats @start_date = '2025-04-15', @end_date = '2025-04-16';
 PRINT 'Case 2: SUCCESS';
 GO
 
 -- Trường hợp 3: Không hợp lệ - Không có bản ghi trong khoảng thời gian
 PRINT 'Case 3: Invalid - No record in range';
-EXEC dbo.sp_get_parking_stats @start_date = '2025-04-01', @end_date = '2025-04-01';
+EXEC dbo.sp_get_parking_stats @start_date = '2025-04-01', @end_date = '2025-04-02';
 PRINT 'Case 3: SUCCESS - No column returned';
 GO
 

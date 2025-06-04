@@ -105,15 +105,18 @@ CREATE TABLE dbo.parking_record (
 GO
 
 -- Delete data in correct order to avoid FK constraints
-DELETE FROM dbo.parking_record;
 DELETE FROM dbo.active_monthly_registration;
+DELETE FROM dbo.expire_monthly_registration;
 DELETE FROM dbo.vehicle;
 DELETE FROM dbo.lecturer_information;
 DELETE FROM dbo.student_information;
 DELETE FROM dbo.customer;
+DELETE FROM dbo.missing_report;
+DELETE FROM dbo.parking_record_history;
 DELETE FROM dbo.payment;
-DELETE FROM dbo.parking_card;
 DELETE FROM dbo.staff;
+DELETE FROM dbo.parking_record;
+DELETE FROM dbo.parking_card;
 DELETE FROM dbo.account;
 DELETE FROM dbo.price;
 DELETE FROM dbo.vehicle_type;
@@ -138,7 +141,7 @@ VALUES
 
 IF NOT EXISTS (SELECT 1 FROM dbo.parking_card WHERE card_id = 1)
 INSERT INTO dbo.parking_card (card_id)
-VALUES (1), (2), (3);
+VALUES (1), (2), (3), (4);
 
 IF NOT EXISTS (SELECT 1 FROM dbo.customer WHERE customer_id = 'cust1')
 INSERT INTO dbo.customer (customer_id, address, customer_type, dob, email, gender, name, phone_number)
@@ -245,7 +248,7 @@ BEGIN TRY
         @record_id = 'rec6', 
         @license_plate = NULL, 
         @identifier = NULL, 
-        @card_id = 1, 
+        @card_id = 4, 
         @staff_in = 'acc1', 
         @vehicle_type = 'vt1';
     PRINT 'Test Case 6: FAILED - Should have thrown error';

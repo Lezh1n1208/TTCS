@@ -25,13 +25,30 @@ CREATE TABLE dbo.staff (
 );
 GO
 
+-- Delete data in correct order to avoid FK constraints
+DELETE FROM dbo.active_monthly_registration;
+DELETE FROM dbo.expire_monthly_registration;
+DELETE FROM dbo.vehicle;
+DELETE FROM dbo.lecturer_information;
+DELETE FROM dbo.student_information;
+DELETE FROM dbo.customer;
+DELETE FROM dbo.missing_report;
+DELETE FROM dbo.parking_record_history;
+DELETE FROM dbo.payment;
+DELETE FROM dbo.staff;
+DELETE FROM dbo.parking_record;
+DELETE FROM dbo.account;
+DELETE FROM dbo.price;
+DELETE FROM dbo.vehicle_type;
+GO
+
 -- Step 2: Test cases
 -- Test Case 1: Valid (Create new staff account)
 PRINT 'Test Case 1: Valid - Create new staff account';
 BEGIN TRY
     EXEC dbo.sp_create_staff_account
-        @account_id = 'acc2',
-        @username = 'staff2',
+        @account_id = 'acc1',
+        @username = 'staff1',
         @password = 'Staff@Pass2023!',
         @role = 'STAFF',
         @address = '456 Street',
@@ -43,8 +60,6 @@ BEGIN TRY
         @name = 'Staff Two',
         @phone_number = '0987654321';
     PRINT 'Test Case 1: SUCCESS';
-    SELECT 'account' AS table_name, * FROM dbo.account WHERE account_id = 'acc2';
-    SELECT 'staff' AS table_name, * FROM dbo.staff WHERE account_id = 'acc2';
 END TRY
 BEGIN CATCH
     PRINT 'Test Case 1: FAILED - Error: ' + ERROR_MESSAGE();
@@ -55,7 +70,7 @@ GO
 PRINT 'Test Case 2: Invalid - Duplicate username';
 BEGIN TRY
     EXEC dbo.sp_create_staff_account
-        @account_id = 'acc3',
+        @account_id = 'acc2',
         @username = 'staff1', -- Duplicate with acc1
         @password = 'Staff@Pass2023!',
         @role = 'STAFF',
@@ -78,7 +93,7 @@ GO
 PRINT 'Test Case 3: Invalid - Duplicate identification';
 BEGIN TRY
     EXEC dbo.sp_create_staff_account
-        @account_id = 'acc4',
+        @account_id = 'acc3',
         @username = 'staff4',
         @password = 'Staff@Pass2023!',
         @role = 'STAFF',
@@ -86,7 +101,7 @@ BEGIN TRY
         @dob = '1996-04-04',
         @email = 'staff4@example.com',
         @gender = 'FEMALE',
-        @identification = '123456789', -- Duplicate with acc1
+        @identification = '987654321', -- Duplicate with acc1
         @is_active = 1,
         @name = 'Staff Four',
         @phone_number = '2233445566';
@@ -101,7 +116,7 @@ GO
 PRINT 'Test Case 4: Invalid - Invalid role';
 BEGIN TRY
     EXEC dbo.sp_create_staff_account
-        @account_id = 'acc5',
+        @account_id = 'acc4',
         @username = 'staff5',
         @password = 'Staff@Pass2023!',
         @role = 'INVALID', -- Not STAFF or ADMIN
@@ -120,9 +135,4 @@ BEGIN CATCH
 END CATCH;
 GO
 
--- Step 3: Verify sp_toggle_staff_status with new account
-PRINT 'Testing sp_toggle_staff_status with new account...';
-SELECT 'Before acc2', account_id, is_active FROM dbo.staff WHERE account_id = 'acc2';
-EXEC dbo.sp_toggle_staff_status @account_id = 'acc2';
-SELECT 'After acc2', account_id, is_active FROM dbo.staff WHERE account_id = 'acc2';
-GO
+SELECT * FROM dbo.account a JOIN dbo.staff s on a.account_id = s.account_id;

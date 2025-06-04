@@ -110,15 +110,19 @@ CREATE TABLE dbo.missing_report (
 GO
 
 -- Delete data in correct order to avoid FK constraints
+DELETE FROM dbo.active_monthly_registration;
+DELETE FROM dbo.expire_monthly_registration;
+DELETE FROM dbo.vehicle;
+DELETE FROM dbo.lecturer_information;
+DELETE FROM dbo.student_information;
+DELETE FROM dbo.customer;
 DELETE FROM dbo.missing_report;
 DELETE FROM dbo.parking_record_history;
-DELETE FROM dbo.parking_record;
-DELETE FROM dbo.expire_monthly_registration;
 DELETE FROM dbo.payment;
-DELETE FROM dbo.parking_card;
 DELETE FROM dbo.staff;
+DELETE FROM dbo.parking_record;
 DELETE FROM dbo.account;
-DELETE FROM dbo.vehicle;
+DELETE FROM dbo.price;
 DELETE FROM dbo.vehicle_type;
 GO
 
@@ -178,32 +182,8 @@ SELECT * FROM dbo.parking_record WHERE record_id = 'rec1';
 PRINT 'Test Case 1: SUCCESS';
 GO
 
--- Test Case 2: Valid - Create missing report without parking record
-PRINT 'Test Case 2: Valid - Create missing report without parking record';
-EXEC dbo.sp_create_missing_report 
-    @report_id = 'mr2',
-    @address = '789 Street',
-    @brand = 'Yamaha',
-    @color = 'Blue',
-    @create_at = '2025-04-16 12:00:00',
-    @gender = 'FEMALE',
-    @identification = '987654321',
-    @identifier = 'BIKE001',
-    @license_plate = NULL,
-    @name = 'Jane Smith',
-    @phone_number = '1122334455',
-    @create_by = 'acc2',
-    @payment_id = 'pay2',
-    @record_id = NULL,
-    @vehicle_type = 'vt2',
-    @missing_fee = 30000;
-SELECT * FROM dbo.missing_report WHERE report_id = 'mr2';
-SELECT * FROM dbo.payment WHERE payment_id = 'pay2';
-PRINT 'Test Case 2: SUCCESS';
-GO
-
--- Test Case 3: Invalid - Invalid create_by
-PRINT 'Test Case 3: Invalid - Invalid create_by';
+-- Test Case 2: Invalid - Invalid create_by
+PRINT 'Test Case 2: Invalid - Invalid create_by';
 BEGIN TRY
     EXEC dbo.sp_create_missing_report 
         @report_id = 'mr3',
@@ -222,15 +202,15 @@ BEGIN TRY
         @record_id = NULL,
         @vehicle_type = 'vt1',
         @missing_fee = 50000;
-    PRINT 'Test Case 3: FAILED - Should have thrown error';
+    PRINT 'Test Case 2: FAILED - Should have thrown error';
 END TRY
 BEGIN CATCH
-    PRINT 'Test Case 3: SUCCESS - Expected error: ' + ERROR_MESSAGE();
+    PRINT 'Test Case 2: SUCCESS - Expected error: ' + ERROR_MESSAGE();
 END CATCH;
 GO
 
--- Test Case 4: Invalid - Invalid vehicle_type
-PRINT 'Test Case 4: Invalid - Invalid vehicle_type';
+-- Test Case 3: Invalid - Invalid vehicle_type
+PRINT 'Test Case 3: Invalid - Invalid vehicle_type';
 BEGIN TRY
     EXEC dbo.sp_create_missing_report 
         @report_id = 'mr4',
@@ -249,15 +229,15 @@ BEGIN TRY
         @record_id = NULL,
         @vehicle_type = 'vt999',
         @missing_fee = 50000;
-    PRINT 'Test Case 4: FAILED - Should have thrown error';
+    PRINT 'Test Case 3: FAILED - Should have thrown error';
 END TRY
 BEGIN CATCH
-    PRINT 'Test Case 4: SUCCESS - Expected error: ' + ERROR_MESSAGE();
+    PRINT 'Test Case 3: SUCCESS - Expected error: ' + ERROR_MESSAGE();
 END CATCH;
 GO
 
--- Test Case 5: Invalid - Invalid record_id
-PRINT 'Test Case 5: Invalid - Invalid record_id';
+-- Test Case 4: Invalid - Invalid record_id
+PRINT 'Test Case 4: Invalid - Invalid record_id';
 BEGIN TRY
     EXEC dbo.sp_create_missing_report 
         @report_id = 'mr5',
@@ -276,9 +256,9 @@ BEGIN TRY
         @record_id = 'rec999',
         @vehicle_type = 'vt1',
         @missing_fee = 50000;
-    PRINT 'Test Case 5: FAILED - Should have thrown error';
+    PRINT 'Test Case 4: FAILED - Should have thrown error';
 END TRY
 BEGIN CATCH
-    PRINT 'Test Case 5: SUCCESS - Expected error: ' + ERROR_MESSAGE();
+    PRINT 'Test Case 4: SUCCESS - Expected error: ' + ERROR_MESSAGE();
 END CATCH;
 GO

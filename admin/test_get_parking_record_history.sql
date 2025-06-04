@@ -60,10 +60,17 @@ CREATE TABLE dbo.parking_record_history (
 GO
 
 -- Delete data in correct order to avoid FK constraints
+DELETE FROM dbo.active_monthly_registration;
+DELETE FROM dbo.expire_monthly_registration;
+DELETE FROM dbo.vehicle;
+DELETE FROM dbo.lecturer_information;
+DELETE FROM dbo.student_information;
+DELETE FROM dbo.customer;
 DELETE FROM dbo.missing_report;
 DELETE FROM dbo.parking_record_history;
-DELETE FROM dbo.parking_card;
+DELETE FROM dbo.payment;
 DELETE FROM dbo.staff;
+DELETE FROM dbo.parking_record;
 DELETE FROM dbo.account;
 DELETE FROM dbo.price;
 DELETE FROM dbo.vehicle_type;
@@ -114,7 +121,7 @@ GO
 
 -- Test Case 2: Valid - Get history within date range
 PRINT 'Test Case 2: Valid - Get history within date range';
-EXEC dbo.sp_get_parking_record_history @start_date = '2025-04-15', @end_date = '2025-04-15';
+EXEC dbo.sp_get_parking_record_history @start_date = '2025-04-15', @end_date = '2025-04-16';
 PRINT 'Test Case 2: SUCCESS';
 GO
 

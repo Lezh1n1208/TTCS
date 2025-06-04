@@ -1,8 +1,20 @@
 -- Step 1: Tạo dữ liệu mẫu
 -- Thêm dữ liệu vào bảng account
+DELETE FROM dbo.active_monthly_registration;
+DELETE FROM dbo.expire_monthly_registration;
+DELETE FROM dbo.vehicle;
+DELETE FROM dbo.lecturer_information;
+DELETE FROM dbo.student_information;
+DELETE FROM dbo.customer;
+DELETE FROM dbo.missing_report;
 DELETE FROM dbo.parking_record_history;
+DELETE FROM dbo.payment;
 DELETE FROM dbo.staff;
-DELETE FROM DBO.account;
+DELETE FROM dbo.parking_record;
+DELETE FROM dbo.account;
+DELETE FROM dbo.price;
+DELETE FROM dbo.vehicle_type;
+GO
 
 INSERT INTO dbo.account (account_id, password, role, username)
 VALUES 
