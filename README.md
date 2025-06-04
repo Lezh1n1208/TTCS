@@ -68,6 +68,11 @@
 ## Hướng dẫn cài đặt
 
 1. Đảm bảo SQL Server 2022 đã được cài đặt (hoặc chạy trong container Docker)
+      **Run docker container:**
+      `docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Password@123"`
+       `-p 1434:1433 --name TTCS`
+       `-v E:\Learning\TTCS\database-backup:/var/opt/mssql/data` 
+       `-d mcr.microsoft.com/mssql/server:2022-latest`
 2. Thực thi script init.sql để khởi tạo cơ sở dữ liệu và các đối tượng
 3. Tạo tài khoản người dùng admin và staff với quyền thích hợp
 4. Sử dụng scripts kiểm thử để xác minh chức năng hoạt động đúng
@@ -80,5 +85,3 @@ Các script kiểm thử trong thư mục staff cung cấp các tình huống ki
 - Kiểm tra các ràng buộc và quy tắc nghiệp vụ
 
 ---
-
-*Hệ thống được phát triển cho mục đích học tập và thực hành*
