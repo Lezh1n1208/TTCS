@@ -24,7 +24,7 @@ GO
 INSERT INTO dbo.vehicle_type (id, name)
 VALUES 
     ('vt1', 'Motorbike'),
-    ('vt2', 'Car');
+    ('vt2', 'Scooter');
 
 INSERT INTO dbo.price (type_id, day_price, monthly_price, night_price)
 VALUES 
