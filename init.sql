@@ -93,6 +93,7 @@ GO
 USE [parking_management];
 GO
 
+-- Create user and assign to login
 BEGIN TRY
     IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'APP_ADMIN')
         CREATE USER [APP_ADMIN] FOR LOGIN [login_admin] WITH DEFAULT_SCHEMA = [dbo];
